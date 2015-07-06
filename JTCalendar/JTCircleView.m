@@ -11,6 +11,8 @@
 
 @implementation JTCircleView
 
+void drawLine(CGContextRef context, CGPoint startPoint, CGPoint endPoint, CGColorRef color);
+
 - (instancetype)init
 {
     self = [super init];
@@ -20,10 +22,10 @@
     
     self.backgroundColor = [UIColor clearColor];
     self.color = [UIColor whiteColor];
+    self.shouldHaveBorder = YES;
     
     return self;
 }
-
 
 - (void)drawRect:(CGRect)rect
 {
@@ -31,16 +33,35 @@
     
     CGContextSetFillColorWithColor(ctx, [self.backgroundColor CGColor]);
     CGContextFillRect(ctx, rect);
-
-    rect = CGRectInset(rect, .5, .5);
+    
+    rect = CGRectInset(rect, 1.0, 1.0);
     
     CGContextSetStrokeColorWithColor(ctx, [self.color CGColor]);
     CGContextSetFillColorWithColor(ctx, [self.color CGColor]);
     
-    CGContextAddEllipseInRect(ctx, rect);
-    CGContextFillEllipseInRect(ctx, rect);
+    CGContextAddRect(ctx, rect);
+    CGContextFillRect(ctx, rect);
+    
+    if (self.shouldHaveBorder) {
+        drawLine(ctx, CGPointMake(rect.origin.x, rect.origin.y), CGPointMake(rect.origin.x + rect.size.width, rect.origin.y), [UIColor blackColor].CGColor);
+        drawLine(ctx, CGPointMake(rect.origin.x + rect.size.width, rect.origin.y), CGPointMake(rect.origin.x + rect.size.width, rect.origin.y + rect.size.height), [UIColor blackColor].CGColor);
+        drawLine(ctx, CGPointMake(rect.origin.x + rect.size.width, rect.origin.y + rect.size.height), CGPointMake(rect.origin.x, rect.origin.y + rect.size.height), [UIColor blackColor].CGColor);
+        drawLine(ctx, CGPointMake(rect.origin.x, rect.origin.y + rect.size.height), CGPointMake(rect.origin.x, rect.origin.y), [UIColor blackColor].CGColor);
+    }
     
     CGContextFillPath(ctx);
+}
+
+void drawLine(CGContextRef context, CGPoint startPoint, CGPoint endPoint, CGColorRef color)
+{
+    CGContextSaveGState(context);
+    CGContextSetLineCap(context, kCGLineCapSquare);
+    CGContextSetStrokeColorWithColor(context, color);
+    CGContextSetLineWidth(context, 1.0);
+    CGContextMoveToPoint(context, startPoint.x + 0.5f, startPoint.y + 0.5f);
+    CGContextAddLineToPoint(context, endPoint.x + 0.5f, endPoint.y + 0.5f);
+    CGContextStrokePath(context);
+    CGContextRestoreGState(context);
 }
 
 - (void)setColor:(UIColor *)color

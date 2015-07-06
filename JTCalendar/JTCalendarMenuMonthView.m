@@ -52,13 +52,13 @@
 
 - (void)setCurrentDate:(NSDate *)currentDate
 {
-    textLabel.text = self.calendarManager.calendarAppearance.monthBlock(currentDate, self.calendarManager);
+    textLabel.text = [self.calendarManager.calendarAppearance.monthBlock(currentDate, self.calendarManager) uppercaseString];
 }
 
 - (void)layoutSubviews
 {
     textLabel.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
-
+    
     // No need to call [super layoutSubviews]
 }
 
